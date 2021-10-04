@@ -19,7 +19,7 @@ public class SpikeHazard : MonoBehaviour
         if (collision.gameObject.tag == "Player")
         {
             player.setHit(true);
-            gameObject.transform.position = originalPosition;
+            //gameObject.transform.position = originalPosition;
 
 
         }

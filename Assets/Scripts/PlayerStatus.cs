@@ -1,17 +1,22 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Audio;
 
 public class PlayerStatus : MonoBehaviour
 {
     private bool isHit = false;
-
+    public AudioSource deathSound;
     [SerializeField]
     private Transform[] spawnPoints;
     CameraSwitchHandler cameraSwitch;
     Animator anim;
+    public Text deathCount;
 
+
+    public CanvasGroup endgame;
     private void Awake()
     {
         cameraSwitch  = GameObject.Find("CameraHandler").GetComponent<CameraSwitchHandler>();
@@ -26,6 +31,7 @@ public class PlayerStatus : MonoBehaviour
         if(isHit == true)
         {
             anim.SetBool("wasHit", true);
+            deathSound.Play();
             Invoke("resetPlayer", .6f);
         }
 
@@ -34,6 +40,8 @@ public class PlayerStatus : MonoBehaviour
     void resetPlayer()
     {
         setRespawn();
+
+        
         anim.SetBool("wasHit", false);
         setHit(false);
         
@@ -50,7 +58,9 @@ public class PlayerStatus : MonoBehaviour
         int levelIndex = cameraSwitch.GetCurrentCamera();
 
         gameObject.transform.position = spawnPoints[levelIndex].transform.position;
-
+        int death = Int32.Parse(deathCount.text);
+        death++;
+        deathCount.text = death.ToString();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -73,7 +83,32 @@ public class PlayerStatus : MonoBehaviour
                     //set priority for cam1
                     cameraSwitch.SwitchToCamera(1);
                     break;
+                case "Level3Start":
+                    // Clear all cams
+                    cameraSwitch.clearAllCams();
+                    //set priority for cam1
+                    cameraSwitch.SwitchToCamera(2);
+                    break;
+                case "Level4Start":
+                    // Clear all cams
+                    cameraSwitch.clearAllCams();
+                    //set priority for cam1
+                    cameraSwitch.SwitchToCamera(3);
+                    break;
+                case "Level5Start":
+                    // Clear all cams
+                    cameraSwitch.clearAllCams();
+                    //set priority for cam1
+                    cameraSwitch.SwitchToCamera(4);
+                    break;
 
+                case "Level6Start":
+                    // Clear all cams
+                    cameraSwitch.clearAllCams();
+                    //set priority for cam1
+                    cameraSwitch.SwitchToCamera(5);
+                    Invoke("EndGame", 1f);
+                    break;
                 default:
                     cameraSwitch.clearAllCams();
                     cameraSwitch.SwitchToCamera(0);
@@ -83,6 +118,14 @@ public class PlayerStatus : MonoBehaviour
 
         }
          
+    }
+
+    void EndGame()
+    {
+        endgame.alpha = 2;
+        endgame.blocksRaycasts = true;
+        endgame.interactable = true;
+        Time.timeScale = 0;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

@@ -2,8 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using UnityEngine.Audio;
 public class PlayerMovement : MonoBehaviour
 {
+
+    public  AudioMixer audioMix;
+    public CanvasGroup optionsMenu, playerUI;
+    public AudioSource jumpSound;
+
     // component variables
     public Rigidbody2D rb;
     public Transform groundCheck;
@@ -21,6 +29,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Awake()
     {
+        UnPause();
         anim = gameObject.GetComponent<Animator>();
     }
 
@@ -69,6 +78,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if(context.performed && IsGrounded())
         {
+            jumpSound.Play();
             rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
         }
 
@@ -82,15 +92,43 @@ public class PlayerMovement : MonoBehaviour
     {
         if(context.performed)
         {
+            //pasue game
+            pauseGame();
 
-#if UNITY_EDITOR
-            // Application.Quit() does not work in the editor so
-            // UnityEditor.EditorApplication.isPlaying need to be set to false to end the game
-            UnityEditor.EditorApplication.isPlaying = false;
-#else
-                 Application.Quit();
-#endif
         }
+    }
+
+    void pauseGame()
+    {
+
+        Time.timeScale = 0;
+
+        playerUI.alpha = 0;
+        playerUI.interactable = false;
+        playerUI.blocksRaycasts = false;
+
+        optionsMenu.alpha = 1;
+        optionsMenu.interactable = true;
+        optionsMenu.blocksRaycasts = true;
+    }
+
+    public void UnPause()
+    {
+
+        Time.timeScale = 1;
+
+        playerUI.alpha = 1;
+        playerUI.interactable = false;
+        playerUI.blocksRaycasts = false;
+
+        optionsMenu.alpha = 0;
+        optionsMenu.interactable = false;
+        optionsMenu.blocksRaycasts = false;
+    }
+
+    public void backToMainMenu()
+    {
+        SceneManager.LoadScene(0);
     }
 
     private bool IsGrounded()
